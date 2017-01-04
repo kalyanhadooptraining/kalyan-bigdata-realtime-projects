@@ -1,0 +1,1 @@
+HADOOP_CLASSPATH=$(hbase classpath):$HBASE_HOME/conf hadoop jar $PHOENIX_HOME/phoenix-kafka-<version>-minimal.jar org.apache.phoenix.kafka.consumer.PhoenixConsumerTool --file /data/kafka-consumer.properties
