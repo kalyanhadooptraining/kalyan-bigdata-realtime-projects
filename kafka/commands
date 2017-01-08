@@ -10,9 +10,26 @@ java -cp /home/orienit/kalyan_bigdata_projects/kalyan-bigdata-examples.jar \
 com.orienit.kalyan.examples.GenerateUsers \
 -f /tmp/users.csv \
 -d ',' \
--n 100 \
+-n 10 \
 -s 1
 
 
-$KAFKA_HOME/bin/kafka-topics.sh --delete  --zookeeper localhost:2181  --topic test
+$KAFKA_HOME/bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+$KAFKA_HOME/bin/zookeeper-shell.sh localhost:2181
+
+rmr /brokers/topics/test
+rmr /brokers/topics/topic1
+rmr /brokers/topics/topic2
+rmr /brokers/topics/__consumer_offsets
+
+
+HADOOP_CLASSPATH=$(hbase classpath):$HBASE_HOME/conf hadoop jar $PHOENIX_HOME/kalyan-phoenix-kafka-4.7.0-HBase-1.1-minimal.jar org.apache.phoenix.kafka.consumer.PhoenixConsumerTool --file /kalyan/kafka/kalyan-kafka-consumer-csv.properties
+
+
+HADOOP_CLASSPATH=$(hbase classpath):$HBASE_HOME/conf hadoop jar $PHOENIX_HOME/kalyan-phoenix-kafka-4.7.0-HBase-1.1-minimal.jar org.apache.phoenix.kafka.consumer.PhoenixConsumerTool -Dfs.default.name=file:/// --file /home/orienit/kalyan-kafka-consumer-csv.properties
+
+
+
+
 
