@@ -1,0 +1,35 @@
+# Connect parameter and value
+--connect
+jdbc:mysql://localhost:3306/sqoop
+
+# Username parameter and value
+--username
+root
+
+# Username parameter and value
+--password
+hadoop
+
+#
+# Remaining options should be specified in the command line.
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
