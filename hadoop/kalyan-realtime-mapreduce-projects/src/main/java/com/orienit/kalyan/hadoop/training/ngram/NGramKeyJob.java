@@ -43,15 +43,6 @@ public class NGramKeyJob implements Tool {
 		// setting custom reducer class
 		nGramKeyJob.setReducerClass(NGramKeyReducer.class);
 
-		// setting custom combiner class
-		// biaGramJob.setCombinerClass(WordCountReducer.class);
-
-		// setting no of reducers
-		// wordCountJob.setNumReduceTasks(26);
-
-		// setting custom partitioner class
-		// biaGramJob.setPartitionerClass(WordCountPartitioner.class);
-
 		// setting mapper output key class: K2
 		nGramKeyJob.setMapOutputKeyClass(NGramKey.class);
 

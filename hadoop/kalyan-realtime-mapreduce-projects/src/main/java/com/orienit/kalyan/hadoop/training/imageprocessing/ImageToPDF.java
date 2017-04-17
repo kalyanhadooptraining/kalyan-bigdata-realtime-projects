@@ -48,11 +48,15 @@ public class ImageToPDF extends Configured implements Tool {
 		}
 		Job job = new Job(getConf(), "ImageToPDF");
 		job.setJarByClass(ImageToPDF.class);
+
 		job.setMapperClass(PDFMapper.class);
+
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(KalyanImageToPdfWritable.class);
+
 		job.setInputFormatClass(KalyanImageToPdfInputFormat.class);
 		job.setOutputFormatClass(KalyanImageToPdfOutputFormat.class);
+
 		FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
 		FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
 		FileSystem.get(getConf()).delete(new Path(otherArgs[1]), true);

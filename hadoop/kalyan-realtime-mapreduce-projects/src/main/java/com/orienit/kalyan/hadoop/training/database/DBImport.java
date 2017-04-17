@@ -26,12 +26,13 @@ public final class DBImport extends Configured implements Tool {
 
 	@Override
 	public int run(String[] args) throws Exception {
+		String driverClassName = "com.mysql.jdbc.Driver";
+		String connectionUrl = "jdbc:mysql://localhost:3306/kalyan_test_db?user=root&password=hadoop";
+		DBConfiguration.configureDB(getConf(), driverClassName, connectionUrl);
 
-		DBConfiguration.configureDB(getConf(), "com.mysql.jdbc.Driver",
-				"jdbc:mysql://localhost:3306/kalyan_test_db" + "?user=root&password=hadoop");
-
-		Job job = new Job(getConf());
+		Job job = new Job(getConf(), "DB Import");
 		job.setJarByClass(DBImport.class);
+
 		job.setMapperClass(Map.class);
 		job.setReducerClass(Reduce.class);
 
@@ -66,6 +67,7 @@ public final class DBImport extends Configured implements Tool {
 	}
 
 	public static class Reduce extends Reducer<EmployeeWritable, NullWritable, EmployeeWritable, NullWritable> {
+		@Override
 		public void reduce(EmployeeWritable key, Iterable<NullWritable> values, Context context)
 				throws IOException, InterruptedException {
 			context.write(key, NullWritable.get());

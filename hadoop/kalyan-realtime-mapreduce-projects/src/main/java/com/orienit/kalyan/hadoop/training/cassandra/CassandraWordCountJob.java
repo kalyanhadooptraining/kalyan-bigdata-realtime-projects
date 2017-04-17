@@ -34,7 +34,7 @@ public class CassandraWordCountJob implements Tool {
 		Job wordCountJob = new Job(getConf());
 
 		// setting the job name
-		wordCountJob.setJobName("Orien IT Pdf WordCount Job");
+		wordCountJob.setJobName("Orien IT Cassandra WordCount Job");
 
 		// to call this as a jar
 		wordCountJob.setJarByClass(this.getClass());
@@ -44,15 +44,6 @@ public class CassandraWordCountJob implements Tool {
 
 		// setting custom reducer class
 		wordCountJob.setReducerClass(CassandraWordCountReducer.class);
-
-		// setting custom combiner class
-		// wordCountJob.setCombinerClass(WordCountReducer.class);
-
-		// setting no of reducers
-		// wordCountJob.setNumReduceTasks(26);
-
-		// setting custom partitioner class
-		// wordCountJob.setPartitionerClass(WordCountPartitioner.class);
 
 		// setting mapper output key class: K2
 		wordCountJob.setMapOutputKeyClass(Text.class);

@@ -43,15 +43,6 @@ public class MongoDbWordCountJob implements Tool {
 		// setting custom reducer class
 		wordCountJob.setReducerClass(MongoDbWordCountReducer.class);
 
-		// setting custom combiner class
-		// wordCountJob.setCombinerClass(WordCountReducer.class);
-
-		// setting no of reducers
-		// wordCountJob.setNumReduceTasks(26);
-
-		// setting custom partitioner class
-		// wordCountJob.setPartitionerClass(WordCountPartitioner.class);
-
 		// setting mapper output key class: K2
 		wordCountJob.setMapOutputKeyClass(Text.class);
 
