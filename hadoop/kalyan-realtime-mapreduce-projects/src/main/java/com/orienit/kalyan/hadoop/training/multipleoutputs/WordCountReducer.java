@@ -17,7 +17,8 @@ public class WordCountReducer extends Reducer<Text, LongWritable, Text, LongWrit
 	}
 
 	@Override
-	protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+	protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
 
 		// 1.sum the list of values
 		long sum = 0;
@@ -40,13 +41,3 @@ public class WordCountReducer extends Reducer<Text, LongWritable, Text, LongWrit
 		mos.close();
 	}
 }
-
-
-
-
-
-
-
-
-
-

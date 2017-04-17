@@ -37,7 +37,7 @@ class PdfRecordReader implements RecordReader<LongWritable, Text> {
 	private Text value = null;
 	private PDDocument pdf = null;
 
-	public PdfRecordReader(Configuration conf, InputSplit inputSplit) throws IOException{
+	public PdfRecordReader(Configuration conf, InputSplit inputSplit) throws IOException {
 		FileSplit split = (FileSplit) inputSplit;
 		final Path file = split.getPath();
 

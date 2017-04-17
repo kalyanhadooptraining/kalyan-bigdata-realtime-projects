@@ -10,7 +10,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class InvertedIndexingReducer extends Reducer<Text, Text, Text, Text> {
 
 	@Override
-	protected void reduce(Text key, java.lang.Iterable<Text> values, Context context) throws java.io.IOException, InterruptedException {
+	protected void reduce(Text key, java.lang.Iterable<Text> values, Context context)
+			throws java.io.IOException, InterruptedException {
 		String removeDuplicates = removeDuplicates(values);
 		context.write(key, new Text(removeDuplicates));
 	};
@@ -24,15 +25,3 @@ public class InvertedIndexingReducer extends Reducer<Text, Text, Text, Text> {
 		return allfiles;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-

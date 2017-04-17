@@ -26,8 +26,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class KalyanImageToPdfInputFormat extends FileInputFormat<Text, KalyanImageToPdfWritable> {
 
 	@Override
-	public RecordReader<Text, KalyanImageToPdfWritable> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException,
-			InterruptedException {
+	public RecordReader<Text, KalyanImageToPdfWritable> createRecordReader(InputSplit split, TaskAttemptContext context)
+			throws IOException, InterruptedException {
 		return new ImageToPdfRecordReader();
 	}
 

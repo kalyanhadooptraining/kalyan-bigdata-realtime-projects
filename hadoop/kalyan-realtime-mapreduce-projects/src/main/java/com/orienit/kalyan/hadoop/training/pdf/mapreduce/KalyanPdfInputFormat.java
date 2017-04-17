@@ -19,8 +19,8 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 public class KalyanPdfInputFormat extends FileInputFormat<LongWritable, Text> {
 	@Override
-	public RecordReader<LongWritable, Text> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException,
-			InterruptedException {
+	public RecordReader<LongWritable, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
+			throws IOException, InterruptedException {
 		return new PdfRecordReader();
 	}
 

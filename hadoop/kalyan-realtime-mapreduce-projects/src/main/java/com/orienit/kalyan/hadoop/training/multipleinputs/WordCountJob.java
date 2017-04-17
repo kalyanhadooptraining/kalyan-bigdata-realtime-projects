@@ -73,7 +73,8 @@ public class WordCountJob implements Tool {
 		wordCountJob.setOutputFormatClass(TextOutputFormat.class);
 
 		MultipleInputs.addInputPath(wordCountJob, new Path(args[0]), TextInputFormat.class, WordCountSpaceMapper.class);
-		MultipleInputs.addInputPath(wordCountJob, new Path(args[1]), KeyValueTextInputFormat.class, WordCountTabMapper.class);
+		MultipleInputs.addInputPath(wordCountJob, new Path(args[1]), KeyValueTextInputFormat.class,
+				WordCountTabMapper.class);
 
 		// setting the input file path
 		// FileInputFormat.addInputPath(wordCountJob, new Path(args[0]));

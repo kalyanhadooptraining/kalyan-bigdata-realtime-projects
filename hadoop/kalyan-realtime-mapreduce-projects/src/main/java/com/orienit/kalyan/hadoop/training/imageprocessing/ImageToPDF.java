@@ -25,7 +25,8 @@ public class ImageToPDF extends Configured implements Tool {
 		String fileName = null;
 
 		@Override
-		public void map(Text key, KalyanImageToPdfWritable value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, KalyanImageToPdfWritable value, Context context)
+				throws IOException, InterruptedException {
 			try {
 				for (int i = 0; i < value.bufferList.size(); i++) {
 					dirName = value.dirList.get(i).substring(43, value.dirList.get(i).length());
@@ -42,10 +43,10 @@ public class ImageToPDF extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		String[] otherArgs = new GenericOptionsParser(getConf(), args).getRemainingArgs();
 		if (otherArgs.length != 2) {
-			System.err.println("Usage: warning count <in> <out>");
+			System.err.println("Usage: ImageToPDF <in> <out>");
 			System.exit(2);
 		}
-		Job job = new Job(getConf(), "imageformats");
+		Job job = new Job(getConf(), "ImageToPDF");
 		job.setJarByClass(ImageToPDF.class);
 		job.setMapperClass(PDFMapper.class);
 		job.setOutputKeyClass(Text.class);

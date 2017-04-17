@@ -20,8 +20,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class KalyanImageToJpegInputFormat extends FileInputFormat<Text, KalyanImageToJpegWritable> {
 
 	@Override
-	public RecordReader<Text, KalyanImageToJpegWritable> createRecordReader(InputSplit split, TaskAttemptContext context)
-			throws IOException, InterruptedException {
+	public RecordReader<Text, KalyanImageToJpegWritable> createRecordReader(InputSplit split,
+			TaskAttemptContext context) throws IOException, InterruptedException {
 		return new ImageToJpegRecordReader();
 	}
 
@@ -76,7 +76,7 @@ class ImageToJpegRecordReader extends RecordReader<Text, KalyanImageToJpegWritab
 
 		fileName = split.getPath().getName().toString();
 		buffer = ImageIO.read(fileIn);
-		
+
 		value = new KalyanImageToJpegWritable(buffer);
 	}
 

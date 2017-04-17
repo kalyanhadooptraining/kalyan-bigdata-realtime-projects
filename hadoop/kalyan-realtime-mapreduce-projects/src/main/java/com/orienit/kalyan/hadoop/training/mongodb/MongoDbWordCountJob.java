@@ -71,15 +71,17 @@ public class MongoDbWordCountJob implements Tool {
 		wordCountJob.setOutputFormatClass(MongoOutputFormat.class);
 
 		final Configuration conf = getConf();
-		
+
 		// setting the input file path
 		// FileInputFormat.addInputPath(wordCountJob, new Path(args[0]));
-		// MongoConfigUtil.setInputURI(conf, "mongodb://localhost/kalyan.input");
+		// MongoConfigUtil.setInputURI(conf,
+		// "mongodb://localhost/kalyan.input");
 		MongoConfigUtil.setInputURI(conf, args[0]);
 
 		// setting the output folder path
 		// FileOutputFormat.setOutputPath(wordCountJob, new Path(args[1]));
-		// MongoConfigUtil.setOutputURI(conf, "mongodb://localhost/kalyan.output");
+		// MongoConfigUtil.setOutputURI(conf,
+		// "mongodb://localhost/kalyan.output");
 		MongoConfigUtil.setOutputURI(conf, args[1]);
 
 		// to execute the job and return the status

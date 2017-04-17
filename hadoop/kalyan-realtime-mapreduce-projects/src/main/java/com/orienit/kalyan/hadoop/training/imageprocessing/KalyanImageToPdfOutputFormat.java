@@ -22,7 +22,8 @@ public class KalyanImageToPdfOutputFormat extends FileOutputFormat<Text, KalyanI
 	TaskAttemptContext job;
 
 	@Override
-	public RecordWriter<Text, KalyanImageToPdfWritable> getRecordWriter(TaskAttemptContext job) throws IOException, InterruptedException {
+	public RecordWriter<Text, KalyanImageToPdfWritable> getRecordWriter(TaskAttemptContext job)
+			throws IOException, InterruptedException {
 		this.job = job;
 		return new ImageToPdfRecordWriter(job);
 	}
@@ -84,7 +85,3 @@ class ImageToPdfRecordWriter extends RecordWriter<Text, KalyanImageToPdfWritable
 		}
 	}
 }
-
-
-
-

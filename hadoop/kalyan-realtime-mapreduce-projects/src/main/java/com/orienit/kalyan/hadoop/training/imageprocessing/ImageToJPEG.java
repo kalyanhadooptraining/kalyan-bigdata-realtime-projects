@@ -19,15 +19,16 @@ import org.apache.hadoop.util.ToolRunner;
 public class ImageToJPEG extends Configured implements Tool {
 	public static class ImageMapper extends Mapper<Text, KalyanImageToJpegWritable, Text, KalyanImageToJpegWritable> {
 		@Override
-		public void map(Text key, KalyanImageToJpegWritable value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, KalyanImageToJpegWritable value, Context context)
+				throws IOException, InterruptedException {
 			context.write(key, value);
 		}
 	}
 
 	public static class ImageReducer extends Reducer<Text, KalyanImageToJpegWritable, Text, KalyanImageToJpegWritable> {
-
 		@Override
-		public void reduce(Text key, Iterable<KalyanImageToJpegWritable> values, Context context) throws IOException, InterruptedException {
+		public void reduce(Text key, Iterable<KalyanImageToJpegWritable> values, Context context)
+				throws IOException, InterruptedException {
 			for (KalyanImageToJpegWritable val : values) {
 				context.write(key, val);
 			}
@@ -38,10 +39,10 @@ public class ImageToJPEG extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		String[] otherArgs = new GenericOptionsParser(getConf(), args).getRemainingArgs();
 		if (otherArgs.length != 2) {
-			System.err.println("Usage: warning count <in> <out>");
+			System.err.println("Usage: ImageToJPEG <in> <out>");
 			System.exit(2);
 		}
-		Job job = new Job(getConf(), "imageformats");
+		Job job = new Job(getConf(), "ImageToJPEG");
 		job.setJarByClass(ImageToJPEG.class);
 
 		job.setMapperClass(ImageMapper.class);

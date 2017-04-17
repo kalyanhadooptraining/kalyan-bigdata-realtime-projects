@@ -7,11 +7,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.bson.BSONObject;
 
-public class MongoDbWordCountMapper extends
-		Mapper<Object, BSONObject, Text, LongWritable> {
+public class MongoDbWordCountMapper extends Mapper<Object, BSONObject, Text, LongWritable> {
 	@Override
-	protected void map(Object key, BSONObject value, Context context)
-			throws IOException, InterruptedException {
+	protected void map(Object key, BSONObject value, Context context) throws IOException, InterruptedException {
 		// Read the line
 		String line = value.get("record").toString();
 
@@ -24,14 +22,3 @@ public class MongoDbWordCountMapper extends
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

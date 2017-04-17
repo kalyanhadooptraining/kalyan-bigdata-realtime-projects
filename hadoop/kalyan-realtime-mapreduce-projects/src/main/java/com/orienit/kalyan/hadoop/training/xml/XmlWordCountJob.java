@@ -92,14 +92,3 @@ public class XmlWordCountJob implements Tool {
 		System.out.println("My Status: " + status);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-

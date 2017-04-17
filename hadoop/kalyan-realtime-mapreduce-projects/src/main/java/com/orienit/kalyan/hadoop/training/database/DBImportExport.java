@@ -25,8 +25,8 @@ public final class DBImportExport extends Configured implements Tool {
 	@Override
 	public int run(String[] args) throws Exception {
 
-		DBConfiguration.configureDB(getConf(), "com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/kalyan_test_db"
-				+ "?user=root&password=hadoop");
+		DBConfiguration.configureDB(getConf(), "com.mysql.jdbc.Driver",
+				"jdbc:mysql://localhost:3306/kalyan_test_db" + "?user=root&password=hadoop");
 
 		Job job = new Job(getConf());
 		job.setJarByClass(DBImportExport.class);
@@ -51,13 +51,15 @@ public final class DBImportExport extends Configured implements Tool {
 
 	public static class Map extends Mapper<LongWritable, EmployeeWritable, EmployeeWritable, NullWritable> {
 		@Override
-		protected void map(LongWritable key, EmployeeWritable value, Context context) throws IOException, InterruptedException {
+		protected void map(LongWritable key, EmployeeWritable value, Context context)
+				throws IOException, InterruptedException {
 			context.write(value, NullWritable.get());
 		}
 	}
 
 	public static class Reduce extends Reducer<EmployeeWritable, NullWritable, EmployeeWritable, NullWritable> {
-		public void reduce(EmployeeWritable key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
+		public void reduce(EmployeeWritable key, Iterable<NullWritable> values, Context context)
+				throws IOException, InterruptedException {
 			context.write(key, NullWritable.get());
 		}
 	}

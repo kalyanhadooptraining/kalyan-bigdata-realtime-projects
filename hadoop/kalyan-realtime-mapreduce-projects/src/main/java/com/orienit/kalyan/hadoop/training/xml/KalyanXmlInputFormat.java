@@ -46,7 +46,8 @@ public class KalyanXmlInputFormat extends TextInputFormat {
 		Text value;
 
 		@Override
-		public void initialize(InputSplit insplit, TaskAttemptContext context) throws IOException, InterruptedException {
+		public void initialize(InputSplit insplit, TaskAttemptContext context)
+				throws IOException, InterruptedException {
 			Configuration conf = context.getConfiguration();
 			tagInclude = conf.getBoolean(XML_TAG_NAME_INCLUDE, true);
 			String tagName = conf.get(XML_TAG_NAME);

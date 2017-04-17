@@ -7,7 +7,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 public class InvertedIndexingMapper extends Mapper<Text, BytesWritable, Text, Text> {
 
 	@Override
-	protected void map(Text key, BytesWritable value, Context context) throws java.io.IOException, InterruptedException {
+	protected void map(Text key, BytesWritable value, Context context)
+			throws java.io.IOException, InterruptedException {
 		String fileName = key.toString();
 		String fileContent = new String(value.getBytes(), 0, value.getLength());
 		String[] words = fileContent.split(" ");
@@ -22,11 +23,3 @@ public class InvertedIndexingMapper extends Mapper<Text, BytesWritable, Text, Te
 		}
 	};
 }
-
-
-
-
-
-
-
-

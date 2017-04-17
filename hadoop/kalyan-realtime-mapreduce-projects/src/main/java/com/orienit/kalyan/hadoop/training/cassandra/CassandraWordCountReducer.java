@@ -8,7 +8,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class CassandraWordCountReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
 	@Override
-	protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+	protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
 		// Sum the list of values
 		long sum = 0;
 		for (LongWritable value : values) {

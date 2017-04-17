@@ -17,7 +17,8 @@ public class KalyanImageToJpegOutputFormat extends FileOutputFormat<Object, Kaly
 	TaskAttemptContext job;
 
 	@Override
-	public RecordWriter<Object, KalyanImageToJpegWritable> getRecordWriter(TaskAttemptContext job) throws IOException, InterruptedException {
+	public RecordWriter<Object, KalyanImageToJpegWritable> getRecordWriter(TaskAttemptContext job)
+			throws IOException, InterruptedException {
 		this.job = job;
 		return new ImageToJpegRecordWriter(job);
 	}
@@ -46,7 +47,8 @@ class ImageToJpegRecordWriter extends RecordWriter<Object, KalyanImageToJpegWrit
 	}
 
 	@Override
-	public synchronized void write(Object key, KalyanImageToJpegWritable value) throws IOException, InterruptedException {
+	public synchronized void write(Object key, KalyanImageToJpegWritable value)
+			throws IOException, InterruptedException {
 		Configuration conf = job.getConfiguration();
 		KalyanImageToJpegOutputFormat ios = new KalyanImageToJpegOutputFormat();
 		Path file = ios.extracted(job, nameGenerate());
@@ -63,12 +65,3 @@ class ImageToJpegRecordWriter extends RecordWriter<Object, KalyanImageToJpegWrit
 	}
 
 }
-
-
-
-
-
-
-
-
-

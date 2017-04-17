@@ -7,7 +7,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class NGramKeyReducer extends Reducer<NGramKey, LongWritable, NGramKey, LongWritable> {
 	@Override
-	protected void reduce(NGramKey key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+	protected void reduce(NGramKey key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
 
 		// 1.sum the list of values
 		long sum = 0;

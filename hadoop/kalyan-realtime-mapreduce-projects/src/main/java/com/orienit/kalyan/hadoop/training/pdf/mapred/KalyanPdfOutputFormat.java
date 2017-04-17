@@ -22,7 +22,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class KalyanPdfOutputFormat<K, V> extends FileOutputFormat<K, V> {
 	@Override
-	public RecordWriter<K, V> getRecordWriter(FileSystem ignored, JobConf job, String name, Progressable progress) throws IOException {
+	public RecordWriter<K, V> getRecordWriter(FileSystem ignored, JobConf job, String name, Progressable progress)
+			throws IOException {
 		String keyValueSeparator = job.get("mapred.pdfoutputformat.separator", "\t");
 		Path file = FileOutputFormat.getTaskOutputPath(job, name);
 		FileSystem fs = file.getFileSystem(job);

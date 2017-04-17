@@ -38,24 +38,20 @@ public class MongoDbOperations {
 		list.add(2, new BasicDBObject("record", "I am learning"));
 		list.add(3, new BasicDBObject("record", "hadoop course"));
 		table.insert(list);
-		
+
 		/*
-		BasicDBObject document = new BasicDBObject();
-		document.put("record", "I am going");
-		table.insert(document);
-
-		document = new BasicDBObject();
-		document.put("record", "to hyd");
-		table.insert(document);
-
-		document = new BasicDBObject();
-		document.put("record", "I am learning");
-		table.insert(document);
-
-		document = new BasicDBObject();
-		document.put("record", "hadoop course");
-		table.insert(document);
-		*/
+		 * BasicDBObject document = new BasicDBObject(); document.put("record",
+		 * "I am going"); table.insert(document);
+		 * 
+		 * document = new BasicDBObject(); document.put("record", "to hyd");
+		 * table.insert(document);
+		 * 
+		 * document = new BasicDBObject(); document.put("record",
+		 * "I am learning"); table.insert(document);
+		 * 
+		 * document = new BasicDBObject(); document.put("record",
+		 * "hadoop course"); table.insert(document);
+		 */
 
 		/**** Find and display ****/
 		BasicDBObject searchQuery = new BasicDBObject();

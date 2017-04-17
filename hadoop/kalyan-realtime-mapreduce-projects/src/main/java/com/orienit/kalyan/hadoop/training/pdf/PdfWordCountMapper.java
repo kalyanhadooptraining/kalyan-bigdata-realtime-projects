@@ -6,11 +6,9 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class PdfWordCountMapper extends
-		Mapper<LongWritable, Text, Text, LongWritable> {
+public class PdfWordCountMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
 	@Override
-	protected void map(LongWritable key, Text value, Context context)
-			throws IOException, InterruptedException {
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		// Read the line
 		String line = value.toString();
 
@@ -23,14 +21,3 @@ public class PdfWordCountMapper extends
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
