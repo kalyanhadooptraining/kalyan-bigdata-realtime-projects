@@ -29,50 +29,50 @@ public class InvertedIndexingJob implements Tool {
 	public int run(String[] args) throws Exception {
 
 		// initializing the job configuration
-		Job wordCountJob = new Job(getConf());
+		Job job = new Job(getConf());
 
 		// setting the job name
-		wordCountJob.setJobName("Orien IT Pdf WordCount Job");
+		job.setJobName("Orien IT Pdf WordCount Job");
 
 		// to call this as a jar
-		wordCountJob.setJarByClass(this.getClass());
+		job.setJarByClass(this.getClass());
 
 		// setting custom mapper class
-		wordCountJob.setMapperClass(InvertedIndexingMapper.class);
+		job.setMapperClass(InvertedIndexingMapper.class);
 
 		// setting custom reducer class
-		wordCountJob.setReducerClass(InvertedIndexingReducer.class);
+		job.setReducerClass(InvertedIndexingReducer.class);
 
 		// setting mapper output key class: K2
-		wordCountJob.setMapOutputKeyClass(Text.class);
+		job.setMapOutputKeyClass(Text.class);
 
 		// setting mapper output value class: V2
-		wordCountJob.setMapOutputValueClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
 
 		// setting reducer output key class: K3
-		wordCountJob.setOutputKeyClass(Text.class);
+		job.setOutputKeyClass(Text.class);
 
 		// setting reducer output value class: V3
-		wordCountJob.setOutputValueClass(Text.class);
+		job.setOutputValueClass(Text.class);
 
 		// setting the input format class ,i.e for K1, V1
-		wordCountJob.setInputFormatClass(SequenceFileInputFormat.class);
+		job.setInputFormatClass(SequenceFileInputFormat.class);
 
 		// setting the output format class
-		wordCountJob.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
 
 		// setting the input file path
-		FileInputFormat.addInputPath(wordCountJob, new Path(args[0]));
+		FileInputFormat.addInputPath(job, new Path(args[0]));
 
 		// setting the output folder path
-		FileOutputFormat.setOutputPath(wordCountJob, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		Path outputpath = new Path(args[1]);
 		// delete the output folder if exists
 		outputpath.getFileSystem(conf).delete(outputpath, true);
 
 		// to execute the job and return the status
-		return wordCountJob.waitForCompletion(true) ? 0 : -1;
+		return job.waitForCompletion(true) ? 0 : -1;
 
 	}
 

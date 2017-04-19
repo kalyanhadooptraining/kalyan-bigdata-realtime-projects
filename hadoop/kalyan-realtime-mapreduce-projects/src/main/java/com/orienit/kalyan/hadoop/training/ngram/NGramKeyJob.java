@@ -29,50 +29,50 @@ public class NGramKeyJob implements Tool {
 	public int run(String[] args) throws Exception {
 
 		// initializing the job configuration
-		Job nGramKeyJob = new Job(getConf());
+		Job job = new Job(getConf());
 
 		// setting the job name
-		nGramKeyJob.setJobName("Orien IT NGramKey Job");
+		job.setJobName("Orien IT NGramKey Job");
 
 		// to call this as a jar
-		nGramKeyJob.setJarByClass(this.getClass());
+		job.setJarByClass(this.getClass());
 
 		// setting custom mapper class
-		nGramKeyJob.setMapperClass(NGramKeyMapper.class);
+		job.setMapperClass(NGramKeyMapper.class);
 
 		// setting custom reducer class
-		nGramKeyJob.setReducerClass(NGramKeyReducer.class);
+		job.setReducerClass(NGramKeyReducer.class);
 
 		// setting mapper output key class: K2
-		nGramKeyJob.setMapOutputKeyClass(NGramKey.class);
+		job.setMapOutputKeyClass(NGramKey.class);
 
 		// setting mapper output value class: V2
-		nGramKeyJob.setMapOutputValueClass(LongWritable.class);
+		job.setMapOutputValueClass(LongWritable.class);
 
 		// setting reducer output key class: K3
-		nGramKeyJob.setOutputKeyClass(NGramKey.class);
+		job.setOutputKeyClass(NGramKey.class);
 
 		// setting reducer output value class: V3
-		nGramKeyJob.setOutputValueClass(LongWritable.class);
+		job.setOutputValueClass(LongWritable.class);
 
 		// setting the input format class ,i.e for K1, V1
-		nGramKeyJob.setInputFormatClass(TextInputFormat.class);
+		job.setInputFormatClass(TextInputFormat.class);
 
 		// setting the output format class
-		nGramKeyJob.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
 
 		// setting the input file path
-		FileInputFormat.addInputPath(nGramKeyJob, new Path(args[0]));
+		FileInputFormat.addInputPath(job, new Path(args[0]));
 
 		// setting the output folder path
-		FileOutputFormat.setOutputPath(nGramKeyJob, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		Path outputpath = new Path(args[1]);
 		// delete the output folder if exists
 		outputpath.getFileSystem(conf).delete(outputpath, true);
 
 		// to execute the job and return the status
-		return nGramKeyJob.waitForCompletion(true) ? 0 : -1;
+		return job.waitForCompletion(true) ? 0 : -1;
 
 	}
 

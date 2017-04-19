@@ -33,13 +33,13 @@ public class HbaseWordCountJob implements Tool {
 		Configuration config = HBaseConfiguration.create(getConf());
 
 		// initializing the job configuration
-		Job wordCountJob = new Job(config);
+		Job job = new Job(config);
 
 		// setting the job name
-		wordCountJob.setJobName("Orien IT Hbase WordCount Job");
+		job.setJobName("Orien IT Hbase WordCount Job");
 
 		// to call this as a jar
-		wordCountJob.setJarByClass(this.getClass());
+		job.setJarByClass(this.getClass());
 
 		Scan scan = new Scan();
 		scan.setCaching(500);
@@ -50,20 +50,20 @@ public class HbaseWordCountJob implements Tool {
 
 		// setting custom mapper details
 		TableMapReduceUtil.initTableMapperJob(inputTable, scan, HbaseWordCountMapper.class, Text.class,
-				LongWritable.class, wordCountJob);
+				LongWritable.class, job);
 
 		// setting custom reducer details
-		TableMapReduceUtil.initTableReducerJob(outputTable, HbaseWordCountReducer.class, wordCountJob);
+		TableMapReduceUtil.initTableReducerJob(outputTable, HbaseWordCountReducer.class, job);
 
 		// setting the input format class ,i.e for K1, V1
-		wordCountJob.setInputFormatClass(TableInputFormat.class);
+		job.setInputFormatClass(TableInputFormat.class);
 
 		// setting the output format class
-		wordCountJob.setOutputFormatClass(TableOutputFormat.class);
-		wordCountJob.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, outputTable);
+		job.setOutputFormatClass(TableOutputFormat.class);
+		job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, outputTable);
 
 		// to execute the job and return the status
-		return wordCountJob.waitForCompletion(true) ? 0 : -1;
+		return job.waitForCompletion(true) ? 0 : -1;
 
 	}
 
