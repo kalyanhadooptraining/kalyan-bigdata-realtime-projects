@@ -2,6 +2,8 @@ package com.orienit.kalyan.hadoop.training.imageprocessing;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -9,28 +11,30 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class ImageToJPEG extends Configured implements Tool {
-	public static class ImageMapper extends Mapper<Text, KalyanImageToJpegWritable, Text, KalyanImageToJpegWritable> {
-		@Override
-		public void map(Text key, KalyanImageToJpegWritable value, Context context)
-				throws IOException, InterruptedException {
-			context.write(key, value);
-		}
-	}
+public class KalyanImageToPDFJob extends Configured implements Tool {
+	public static class PDFMapper extends Mapper<Text, KalyanImageToPdfWritable, Text, KalyanImageToPdfWritable> {
 
-	public static class ImageReducer extends Reducer<Text, KalyanImageToJpegWritable, Text, KalyanImageToJpegWritable> {
+		private static final Log log = LogFactory.getLog(PDFMapper.class);
+		String dirName = null;
+		String fileName = null;
+
 		@Override
-		public void reduce(Text key, Iterable<KalyanImageToJpegWritable> values, Context context)
+		public void map(Text key, KalyanImageToPdfWritable value, Context context)
 				throws IOException, InterruptedException {
-			for (KalyanImageToJpegWritable val : values) {
-				context.write(key, val);
+			try {
+				for (int i = 0; i < value.bufferList.size(); i++) {
+					dirName = value.dirList.get(i).substring(43, value.dirList.get(i).length());
+					fileName = value.keyList.get(i).substring(0, value.keyList.get(i).length() - 4);
+					context.write(new Text(fileName), value);
+				}
+			} catch (Exception e) {
+				log.info(e);
 			}
 		}
 	}
@@ -39,20 +43,19 @@ public class ImageToJPEG extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		String[] otherArgs = new GenericOptionsParser(getConf(), args).getRemainingArgs();
 		if (otherArgs.length != 2) {
-			System.err.println("Usage: ImageToJPEG <in> <out>");
+			System.err.println("Usage: ImageToPDF <in> <out>");
 			System.exit(2);
 		}
-		Job job = new Job(getConf(), "ImageToJPEG");
-		job.setJarByClass(ImageToJPEG.class);
+		Job job = new Job(getConf(), "ImageToPDF");
+		job.setJarByClass(KalyanImageToPDFJob.class);
 
-		job.setMapperClass(ImageMapper.class);
-		job.setReducerClass(ImageReducer.class);
+		job.setMapperClass(PDFMapper.class);
 
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(KalyanImageToJpegWritable.class);
+		job.setOutputValueClass(KalyanImageToPdfWritable.class);
 
-		job.setInputFormatClass(KalyanImageToJpegInputFormat.class);
-		job.setOutputFormatClass(KalyanImageToJpegOutputFormat.class);
+		job.setInputFormatClass(KalyanImageToPdfInputFormat.class);
+		job.setOutputFormatClass(KalyanImageToPdfOutputFormat.class);
 
 		FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
 		FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
@@ -61,6 +64,6 @@ public class ImageToJPEG extends Configured implements Tool {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ToolRunner.run(new Configuration(), new ImageToJPEG(), args);
+		ToolRunner.run(new Configuration(), new KalyanImageToPDFJob(), args);
 	}
 }

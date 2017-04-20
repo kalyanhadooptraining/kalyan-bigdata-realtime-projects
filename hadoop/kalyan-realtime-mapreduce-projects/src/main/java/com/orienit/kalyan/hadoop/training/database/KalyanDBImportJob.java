@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Job;
@@ -11,14 +12,15 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.db.DBConfiguration;
 import org.apache.hadoop.mapreduce.lib.db.DBInputFormat;
-import org.apache.hadoop.mapreduce.lib.db.DBOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public final class KalyanDBImportExport extends Configured implements Tool {
+public final class KalyanDBImportJob extends Configured implements Tool {
 
 	public static void main(String... args) throws Exception {
-		int status = ToolRunner.run(new Configuration(), new KalyanDBImportExport(), args);
+		int status = ToolRunner.run(new Configuration(), new KalyanDBImportJob(), args);
 		System.out.println("Status: " + status);
 	}
 
@@ -28,14 +30,14 @@ public final class KalyanDBImportExport extends Configured implements Tool {
 		String connectionUrl = "jdbc:mysql://localhost:3306/kalyan_test_db?user=root&password=hadoop";
 		DBConfiguration.configureDB(getConf(), driverClassName, connectionUrl);
 
-		Job job = new Job(getConf(), "DB Import and Export");
-		job.setJarByClass(KalyanDBImportExport.class);
+		Job job = new Job(getConf(), "DB Import");
+		job.setJarByClass(KalyanDBImportJob.class);
 
 		job.setMapperClass(Map.class);
 		job.setReducerClass(Reduce.class);
 
 		job.setInputFormatClass(DBInputFormat.class);
-		job.setOutputFormatClass(DBOutputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
 
 		job.setMapOutputKeyClass(EmployeeWritable.class);
 		job.setMapOutputValueClass(NullWritable.class);
@@ -45,7 +47,13 @@ public final class KalyanDBImportExport extends Configured implements Tool {
 
 		DBInputFormat.setInput(job, EmployeeWritable.class, "select * from employee", "SELECT COUNT(id) FROM employee");
 
-		DBOutputFormat.setOutput(job, "employee_export", EmployeeWritable.fields);
+		// DistributedCache.addLocalFiles(getConf(), args[1]);
+
+		Path outputPath = new Path(args[0]);
+
+		FileOutputFormat.setOutputPath(job, outputPath);
+
+		outputPath.getFileSystem(getConf()).delete(outputPath, true);
 
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
