@@ -1,10 +1,14 @@
-package com.orienit.kalyan.hadoop.training.cassandra;
+package com.orienit.kalyan.hadoop.training.pdf;
+
+import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -13,7 +17,7 @@ import org.apache.hadoop.util.ToolRunner;
 import com.orienit.kalyan.hadoop.training.pdf.mapreduce.KalyanPdfInputFormat;
 import com.orienit.kalyan.hadoop.training.pdf.mapreduce.KalyanPdfOutputFormat;
 
-public class CassandraWordCountJob implements Tool {
+public class PdfJob implements Tool {
 	// Initializing configuration object
 	private Configuration conf;
 
@@ -34,16 +38,16 @@ public class CassandraWordCountJob implements Tool {
 		Job job = new Job(getConf());
 
 		// setting the job name
-		job.setJobName("Orien IT Cassandra WordCount Job");
+		job.setJobName("Orien IT Pdf WordCount Job");
 
 		// to call this as a jar
 		job.setJarByClass(this.getClass());
 
 		// setting custom mapper class
-		job.setMapperClass(CassandraWordCountMapper.class);
+		job.setMapperClass(PdfMapper.class);
 
 		// setting custom reducer class
-		job.setReducerClass(CassandraWordCountReducer.class);
+		job.setReducerClass(PdfReducer.class);
 
 		// setting mapper output key class: K2
 		job.setMapOutputKeyClass(Text.class);
@@ -79,7 +83,40 @@ public class CassandraWordCountJob implements Tool {
 	}
 
 	public static void main(String[] args) throws Exception {
-		int status = ToolRunner.run(new Configuration(), new CassandraWordCountJob(), args);
+		int status = ToolRunner.run(new Configuration(), new PdfJob(), args);
 		System.out.println("My Status: " + status);
+	}
+}
+
+class PdfMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
+	@Override
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		// Read the line
+		String line = value.toString();
+
+		// Split the line into words
+		String[] words = line.split(" ");
+
+		// assign count(1) to each word
+		for (String word : words) {
+			context.write(new Text(word), new LongWritable(1));
+		}
+	}
+
+}
+
+class PdfReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
+
+	@Override
+	protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
+		// Sum the list of values
+		long sum = 0;
+		for (LongWritable value : values) {
+			sum = sum + value.get();
+		}
+
+		// assign sum to corresponding word
+		context.write(key, new LongWritable(sum));
 	}
 }

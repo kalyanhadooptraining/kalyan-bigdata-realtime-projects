@@ -1,8 +1,6 @@
-package com.orienit.kalyan.hadoop.training.ngram;
+package com.orienit.kalyan.hadoop.training.multipleoutputs;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -14,11 +12,12 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class NGramKeyJob implements Tool {
+public class MultipleOutputsJob implements Tool {
 	// Initializing configuration object
 	private Configuration conf;
 
@@ -39,25 +38,25 @@ public class NGramKeyJob implements Tool {
 		Job job = new Job(getConf());
 
 		// setting the job name
-		job.setJobName("Orien IT NGramKey Job");
+		job.setJobName("Orien IT MultipleOutputs Job");
 
 		// to call this as a jar
 		job.setJarByClass(this.getClass());
 
 		// setting custom mapper class
-		job.setMapperClass(NGramKeyMapper.class);
+		job.setMapperClass(MultipleOutputsMapper.class);
 
 		// setting custom reducer class
-		job.setReducerClass(NGramKeyReducer.class);
+		job.setReducerClass(MultipleOutputsReducer.class);
 
 		// setting mapper output key class: K2
-		job.setMapOutputKeyClass(NGramKey.class);
+		job.setMapOutputKeyClass(Text.class);
 
 		// setting mapper output value class: V2
 		job.setMapOutputValueClass(LongWritable.class);
 
 		// setting reducer output key class: K3
-		job.setOutputKeyClass(NGramKey.class);
+		job.setOutputKeyClass(Text.class);
 
 		// setting reducer output value class: V3
 		job.setOutputValueClass(LongWritable.class);
@@ -66,7 +65,10 @@ public class NGramKeyJob implements Tool {
 		job.setInputFormatClass(TextInputFormat.class);
 
 		// setting the output format class
-		job.setOutputFormatClass(TextOutputFormat.class);
+		// wordCountJob.setOutputFormatClass(TextOutputFormat.class);
+
+		MultipleOutputs.addNamedOutput(job, "EVEN", TextOutputFormat.class, Text.class, LongWritable.class);
+		MultipleOutputs.addNamedOutput(job, "ODD", TextOutputFormat.class, Text.class, LongWritable.class);
 
 		// setting the input file path
 		FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -80,27 +82,17 @@ public class NGramKeyJob implements Tool {
 
 		// to execute the job and return the status
 		return job.waitForCompletion(true) ? 0 : -1;
+
 	}
 
 	public static void main(String[] args) throws Exception {
 		// start the job providing arguments and configurations
-		Configuration conf = new Configuration();
-		conf.set("ngramcount", args[2]);
-
-		int status = ToolRunner.run(conf, new NGramKeyJob(), args);
+		int status = ToolRunner.run(new Configuration(), new MultipleOutputsJob(), args);
 		System.out.println("My Status: " + status);
 	}
 }
 
-class NGramKeyMapper extends Mapper<LongWritable, Text, NGramKey, LongWritable> {
-
-	private int ngramcount;
-
-	@Override
-	protected void setup(Context context) throws IOException, InterruptedException {
-		ngramcount = context.getConfiguration().getInt("ngramcount", 0);
-	}
-
+class MultipleOutputsMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		// 1.read the line
@@ -109,27 +101,25 @@ class NGramKeyMapper extends Mapper<LongWritable, Text, NGramKey, LongWritable> 
 		// 2.split the line into words
 		String[] words = line.split(" ");
 
-		// 3.assign count(1) to two conscutive words
-		for (int i = 0; i < words.length; i++) {
-			List<String> nwords = new ArrayList<String>();
-
-			if (i + ngramcount <= words.length) {
-				for (int j = i; j < i + ngramcount; j++) {
-					nwords.add(words[j]);
-				}
-				NGramKey nGramKey = new NGramKey();
-				nGramKey.setWords(nwords);
-				context.write(nGramKey, new LongWritable(1));
-			}
+		// 3.assign count(1) to each word
+		for (String word : words) {
+			context.write(new Text(word), new LongWritable(1));
 		}
 	}
 }
 
-class NGramKeyReducer extends Reducer<NGramKey, LongWritable, NGramKey, LongWritable> {
-	@Override
-	protected void reduce(NGramKey key, Iterable<LongWritable> values, Context context)
-			throws IOException, InterruptedException {
+class MultipleOutputsReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
 
+	private MultipleOutputs<Text, LongWritable> mos;
+
+	@Override
+	protected void setup(Context context) throws IOException, InterruptedException {
+		mos = new MultipleOutputs<Text, LongWritable>(context);
+	}
+
+	@Override
+	protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
 		// 1.sum the list of values
 		long sum = 0;
 		for (LongWritable value : values) {
@@ -137,6 +127,17 @@ class NGramKeyReducer extends Reducer<NGramKey, LongWritable, NGramKey, LongWrit
 		}
 
 		// 2.assign sum to the corresponding word
-		context.write(key, new LongWritable(sum));
+		// context.write(key, new LongWritable(sum));
+
+		if (sum % 2 == 0) {
+			mos.write("EVEN", key, new LongWritable(sum));
+		} else {
+			mos.write("ODD", key, new LongWritable(sum));
+		}
+	}
+
+	@Override
+	protected void cleanup(Context context) throws IOException, InterruptedException {
+		mos.close();
 	}
 }

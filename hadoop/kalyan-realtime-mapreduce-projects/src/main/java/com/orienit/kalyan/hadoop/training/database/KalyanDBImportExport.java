@@ -15,10 +15,10 @@ import org.apache.hadoop.mapreduce.lib.db.DBOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public final class DBImportExport extends Configured implements Tool {
+public final class KalyanDBImportExport extends Configured implements Tool {
 
 	public static void main(String... args) throws Exception {
-		int status = ToolRunner.run(new Configuration(), new DBImportExport(), args);
+		int status = ToolRunner.run(new Configuration(), new KalyanDBImportExport(), args);
 		System.out.println("Status: " + status);
 	}
 
@@ -29,7 +29,7 @@ public final class DBImportExport extends Configured implements Tool {
 		DBConfiguration.configureDB(getConf(), driverClassName, connectionUrl);
 
 		Job job = new Job(getConf(), "DB Import and Export");
-		job.setJarByClass(DBImportExport.class);
+		job.setJarByClass(KalyanDBImportExport.class);
 
 		job.setMapperClass(Map.class);
 		job.setReducerClass(Reduce.class);

@@ -1,19 +1,20 @@
-package com.orienit.kalyan.hadoop.training.pdf;
+package com.orienit.kalyan.hadoop.training.xml;
+
+import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-import com.orienit.kalyan.hadoop.training.pdf.mapreduce.KalyanPdfInputFormat;
-import com.orienit.kalyan.hadoop.training.pdf.mapreduce.KalyanPdfOutputFormat;
-
-public class PdfWordCountJob implements Tool {
+public class XmlJob implements Tool {
 	// Initializing configuration object
 	private Configuration conf;
 
@@ -34,16 +35,16 @@ public class PdfWordCountJob implements Tool {
 		Job wordCountJob = new Job(getConf());
 
 		// setting the job name
-		wordCountJob.setJobName("Orien IT Pdf WordCount Job");
+		wordCountJob.setJobName("Orien IT XML WordCount Job");
 
 		// to call this as a jar
 		wordCountJob.setJarByClass(this.getClass());
 
 		// setting custom mapper class
-		wordCountJob.setMapperClass(PdfWordCountMapper.class);
+		wordCountJob.setMapperClass(XmlMapper.class);
 
 		// setting custom reducer class
-		wordCountJob.setReducerClass(PdfWordCountReducer.class);
+		wordCountJob.setReducerClass(XmlReducer.class);
 
 		// setting mapper output key class: K2
 		wordCountJob.setMapOutputKeyClass(Text.class);
@@ -58,10 +59,10 @@ public class PdfWordCountJob implements Tool {
 		wordCountJob.setOutputValueClass(LongWritable.class);
 
 		// setting the input format class ,i.e for K1, V1
-		wordCountJob.setInputFormatClass(KalyanPdfInputFormat.class);
+		wordCountJob.setInputFormatClass(KalyanXmlInputFormat.class);
 
 		// setting the output format class
-		wordCountJob.setOutputFormatClass(KalyanPdfOutputFormat.class);
+		wordCountJob.setOutputFormatClass(KalyanXmlOutputFormat.class);
 
 		// setting the input file path
 		FileInputFormat.addInputPath(wordCountJob, new Path(args[0]));
@@ -79,7 +80,41 @@ public class PdfWordCountJob implements Tool {
 	}
 
 	public static void main(String[] args) throws Exception {
-		int status = ToolRunner.run(new Configuration(), new PdfWordCountJob(), args);
+		Configuration conf = new Configuration();
+		conf.set("xml.tagname", "input");
+		conf.setBoolean("xml.tagname.include", false);
+		int status = ToolRunner.run(conf, new XmlJob(), args);
 		System.out.println("My Status: " + status);
+	}
+}
+
+class XmlMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
+	@Override
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		// Read the line
+		String line = value.toString();
+
+		// Split the line into words
+		String[] words = line.split(" ");
+
+		// assign count(1) to each word
+		for (String word : words) {
+			context.write(new Text(word), new LongWritable(1));
+		}
+	}
+}
+
+class XmlReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
+	@Override
+	protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+			throws IOException, InterruptedException {
+		// Sum the list of values
+		long sum = 0;
+		for (LongWritable value : values) {
+			sum = sum + value.get();
+		}
+
+		// assign sum to corresponding word
+		context.write(key, new LongWritable(sum));
 	}
 }

@@ -1,9 +1,16 @@
 package com.orienit.kalyan.hadoop.training.invertedindexing;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -32,7 +39,7 @@ public class InvertedIndexingJob implements Tool {
 		Job job = new Job(getConf());
 
 		// setting the job name
-		job.setJobName("Orien IT Pdf WordCount Job");
+		job.setJobName("Orien IT Inverted Indexing Job");
 
 		// to call this as a jar
 		job.setJarByClass(this.getClass());
@@ -79,5 +86,44 @@ public class InvertedIndexingJob implements Tool {
 	public static void main(String[] args) throws Exception {
 		int status = ToolRunner.run(new Configuration(), new InvertedIndexingJob(), args);
 		System.out.println("My Status: " + status);
+	}
+}
+
+class InvertedIndexingMapper extends Mapper<Text, BytesWritable, Text, Text> {
+
+	@Override
+	protected void map(Text key, BytesWritable value, Context context)
+			throws java.io.IOException, InterruptedException {
+		String fileName = key.toString();
+		String fileContent = new String(value.getBytes(), 0, value.getLength());
+		String[] words = fileContent.split(" ");
+		for (String word : words) {
+			if (word.contains("\n")) {
+				String[] nwords = word.split("\n");
+				for (String nword : nwords) {
+					context.write(new Text(nword), new Text(fileName));
+				}
+			} else
+				context.write(new Text(word), new Text(fileName));
+		}
+	};
+}
+
+class InvertedIndexingReducer extends Reducer<Text, Text, Text, Text> {
+
+	@Override
+	protected void reduce(Text key, java.lang.Iterable<Text> values, Context context)
+			throws java.io.IOException, InterruptedException {
+		String removeDuplicates = removeDuplicates(values);
+		context.write(key, new Text(removeDuplicates));
+	};
+
+	private static String removeDuplicates(java.lang.Iterable<Text> files) {
+		Set<String> uniqueFiles = new LinkedHashSet<String>();
+		for (Text file : files) {
+			uniqueFiles.add(file.toString());
+		}
+		String allfiles = StringUtils.join(uniqueFiles, ",");
+		return allfiles;
 	}
 }

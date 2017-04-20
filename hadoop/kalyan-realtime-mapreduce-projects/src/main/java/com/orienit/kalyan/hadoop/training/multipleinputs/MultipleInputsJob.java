@@ -1,10 +1,14 @@
 package com.orienit.kalyan.hadoop.training.multipleinputs;
 
+import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -13,7 +17,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class WordCountJob implements Tool {
+public class MultipleInputsJob implements Tool {
 	// Initializing configuration object
 	private Configuration conf;
 
@@ -43,7 +47,7 @@ public class WordCountJob implements Tool {
 		// job.setMapperClass(WordCountMapper.class);
 
 		// setting custom reducer class
-		job.setReducerClass(WordCountReducer.class);
+		job.setReducerClass(MultipleInputsReducer.class);
 
 		// setting mapper output key class: K2
 		job.setMapOutputKeyClass(Text.class);
@@ -63,8 +67,9 @@ public class WordCountJob implements Tool {
 		// setting the output format class
 		job.setOutputFormatClass(TextOutputFormat.class);
 
-		MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, WordCountSpaceMapper.class);
-		MultipleInputs.addInputPath(job, new Path(args[1]), KeyValueTextInputFormat.class, WordCountTabMapper.class);
+		MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, MultipleInputsSpaceMapper.class);
+		MultipleInputs.addInputPath(job, new Path(args[1]), KeyValueTextInputFormat.class,
+				MultipleInputsTabMapper.class);
 
 		// setting the input file path
 		// FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -83,8 +88,37 @@ public class WordCountJob implements Tool {
 
 	public static void main(String[] args) throws Exception {
 		// start the job providing arguments and configurations
-		int status = ToolRunner.run(new Configuration(), new WordCountJob(), args);
+		int status = ToolRunner.run(new Configuration(), new MultipleInputsJob(), args);
 		System.out.println("My Status: " + status);
 	}
+}
 
+class MultipleInputsSpaceMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
+	@Override
+	protected void map(LongWritable key, Text value, Context context) throws java.io.IOException, InterruptedException {
+		String line = value.toString();
+		String[] words = line.split(" ");
+		for (String word : words) {
+			context.write(new Text(word), new LongWritable(1));
+		}
+	};
+}
+
+class MultipleInputsTabMapper extends Mapper<Text, Text, Text, LongWritable> {
+	@Override
+	protected void map(Text key, Text value, Context context) throws java.io.IOException, InterruptedException {
+		context.write(key, new LongWritable(Long.parseLong(value.toString())));
+	};
+}
+
+class MultipleInputsReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
+	@Override
+	protected void reduce(Text key, Iterable<LongWritable> value, Context context)
+			throws IOException, InterruptedException {
+		long sum = 0;
+		while (value.iterator().hasNext()) {
+			sum += value.iterator().next().get();
+		}
+		context.write(key, new LongWritable(sum));
+	};
 }
